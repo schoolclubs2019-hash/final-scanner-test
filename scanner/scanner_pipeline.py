@@ -943,8 +943,11 @@ def main():
                         # Explicit publication remains fail-fast to protect its contract.
                         if args.publish or args.publish_staging:
                             raise
-                        store.update(run_id, status='REPAIR_REQUIRED', scanner_status='HELD',
-                                     integrity_status='FAIL', publish_eligible=False,
+                        store.update(run_id,
+                                     status='RETRY' if isinstance(exc, FetchError) and exc.retryable else 'REPAIR_REQUIRED',
+                                     scanner_status='INCOMPLETE' if isinstance(exc, FetchError) and exc.retryable else 'HELD',
+                                     integrity_status=None if isinstance(exc, FetchError) and exc.retryable else 'FAIL',
+                                     publish_eligible=False,
                                      error=getattr(exc, 'state', str(exc)))
                         run = store.run(run_id)
                         console(run, f'{index}/{len(selected)}')
