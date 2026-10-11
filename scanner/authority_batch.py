@@ -599,12 +599,12 @@ def worker(state_dir, name, config_path, render=False, publish=False, phase='fir
                 row = status_row(current or brand)
                 row['worker_error'] = type(exc).__name__
                 results.append(row)
-                print(json.dumps(row, ensure_ascii=False), flush=True)
+                print(json.dumps(row, ensure_ascii=True), flush=True)
                 # A failed brand must not starve subsequent independent brands.
                 # The worker still exits nonzero and first-pass checkpoint is withheld.
                 continue
             results.append(row)
-            print(json.dumps(row, ensure_ascii=False), flush=True)
+            print(json.dumps(row, ensure_ascii=True), flush=True)
         if policy is not None and phase == 'first' and not drained and not any(row.get('worker_error') for row in results):
             checkpoint = state / f'{name}.first-pass.json'
             checkpoint_json(checkpoint, {'scanner_fingerprint': pipeline_fingerprint(),
