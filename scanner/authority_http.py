@@ -138,6 +138,9 @@ class AuthorityHTTP:
         with self.store.db:
             self.store.db.execute('INSERT OR REPLACE INTO authority_retries VALUES(?,?,?,?,?,?)',
                                  (self.run_id, key, attempts, 0, 'SUCCESS', total))
+            self.store.db.execute(
+                'UPDATE authority_domains SET interval=MAX(?,interval/2.0) WHERE domain=?',
+                (self.http.interval, self.domain))
         # Static exhaustion is recovered only after the caller validates the
         # rendered product evidence; do not clear that diagnostic prematurely.
         if (self.store.run(self.run_id).get('authority_retry') or {}).get('url') == key:
@@ -170,5 +173,9 @@ class AuthorityHTTP:
             with db:
                 db.execute('INSERT OR REPLACE INTO authority_retries VALUES(?,?,?,?,?,?)',
                            (self.run_id, url, attempts, 0, 'SUCCESS', total))
-            self.store.update(self.run_id, status='RUNNING', authority_retry=None, error=None)
+                db.execute(
+                    'UPDATE authority_domains SET interval=MAX(?,interval/2.0) WHERE domain=?',
+                    (self.http.interval, self.domain))
+            if (self.store.run(self.run_id).get('authority_retry') or {}).get('url') == url:
+                self.store.update(self.run_id, status='RUNNING', authority_retry=None, error=None)
             return response
