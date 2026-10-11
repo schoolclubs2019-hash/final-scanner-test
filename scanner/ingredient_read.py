@@ -263,6 +263,14 @@ def score_sku(name, ingredients, url='', processing='processed', price='', curre
         return rec
     cleaned, _absent = strip_negations(ingredients)
     ings = [i for i in split_ingredients(cleaned) if not is_descriptor(i)]
+    if not ings:
+        rec = {'name': name, 'ingredients': ingredients, 'animal': [],
+               'additives': [], 'processing': processing, 'plant_based': None,
+               'natural_pct': None, 'score': None, 'unreadable': True,
+               'reason': 'no ingredients after filtering', 'url': url}
+        if price: rec['price'] = price
+        if currency: rec['currency'] = currency
+        return rec
     animal, additives, nat, unknown = set(), set(), 0, 0
     for ing in ings:
         c = classify_ingredient(ing)
