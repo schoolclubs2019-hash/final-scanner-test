@@ -73,7 +73,7 @@ def scanner_fingerprint():
         digest.update(path.name.encode())
         digest.update(path.read_bytes())
     return digest.hexdigest()[:16]
-API_KEY = [REDACTED], "")
+API_KEY = os.environ.get("THRONE_API_KEY", "")
 
 
 def validate_bind(host, api_key):
