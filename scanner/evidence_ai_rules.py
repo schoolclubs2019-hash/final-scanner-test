@@ -9,7 +9,7 @@ from urllib.parse import urlsplit
 from bs4 import BeautifulSoup
 from pydantic import BaseModel, ConfigDict, Field
 
-STANDARD = json.loads((Path(__file__).resolve().parents[2]/'_Shared/Throne-Standard/throne_standard.json').read_text())
+from throne_standard import STANDARD  # canonical loader supports bundled isolated tests
 TOLERANCE = STANDARD['composition']['tolerance_percentage_points']
 TAXONOMY={alias.casefold():canonical for group in STANDARD['material_taxonomy'].values()
           for canonical,aliases in group.items() for alias in [canonical,*aliases]}
