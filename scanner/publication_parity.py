@@ -272,13 +272,41 @@ def parity_check(canonical, config, transport, rows=(), surfaces=SURFACES):
             errors = []
             sku_surface = name.endswith('_sku')
             targets = rows if sku_surface else [None]
+            # Prefer one complete SKU-indexed collection response. Never issue
+            # unbounded per-SKU requests for a large catalogue.
+            indexed = None
+            if sku_surface and spec.get('collection_url'):
+                collection_spec = {**spec, 'url': spec['collection_url']}
+                batch = transport.request(endpoint(collection_spec, endpoint_context),
+                                          token_env=spec.get('token_env'),
+                                          response_format=spec.get('format', 'json'))
+                documents = (batch.get('products', batch.get('items', batch.get('rows')))
+                             if isinstance(batch, dict) else batch)
+                if not isinstance(documents, list):
+                    raise ContractError('SKU collection readback must be an array')
+                indexed = {}
+                for doc in documents:
+                    if not isinstance(doc, dict) or not isinstance(doc.get('sku'), str) or not doc['sku']:
+                        raise ContractError('SKU collection identity missing')
+                    if doc['sku'] in indexed:
+                        raise ContractError('Duplicate SKU in collection readback')
+                    indexed[doc['sku']] = doc
+            elif sku_surface and len(rows) > 100:
+                raise ContractError('SKU collection readback required for large catalogue')
             count = 0
             for row in targets:
                 count += 1
                 if row is not None and '{sku}' in spec['url'] and not row.get('sku'):
                     raise ContractError('Real SKU identity required by consumer endpoint')
                 expected = canonical if row is None else {**canonical, **{k: row.get(k) for k in ('product_id', 'sku', 'score', 'terminal_state')}}
-                actual = transport.request(endpoint(spec, endpoint_context, row), token_env=spec.get('token_env'), response_format=spec.get('format', 'json'))
+                if indexed is not None:
+                    if row.get('sku') not in indexed:
+                        raise ContractError('Missing SKU in collection readback')
+                    actual = indexed[row['sku']]
+                else:
+                    actual = transport.request(endpoint(spec, endpoint_context, row),
+                                               token_env=spec.get('token_env'),
+                                               response_format=spec.get('format', 'json'))
                 if name == 'htt_website':
                     if spec.get('format') != 'html' or not spec.get('script_id'):
                         raise ContractError('Actual listing HTML readback required')
