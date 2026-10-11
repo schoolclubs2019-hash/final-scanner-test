@@ -46,7 +46,7 @@ def authority_rescore_department(record):
 
 def pipeline_fingerprint():
     h = hashlib.sha256(scanner_fingerprint().encode())
-    for name in ('catalogue_discovery.py', 'scanner_pipeline.py', 'scanner_store.py', 'publication_parity.py', 'rendered_evidence.py', 'htt_adapters.py', 'delta_refresh.py', 'consumer_lookup.py', 'authority_http.py', 'htt_publish.py', 'authority_batch.py', 'production_worker.py', 'storefront.py', 'public_suffix_list.dat', 'scan_policy.py', 'catalogue_audit.py', 'commerce_capture.py', 'evidence_ai_rules.py', 'evidence_ai_gate.py'):
+    for name in ('catalogue_discovery.py', 'scanner_pipeline.py', 'scanner_store.py', 'publication_parity.py', 'rendered_evidence.py', 'htt_adapters.py', 'delta_refresh.py', 'consumer_lookup.py', 'authority_http.py', 'htt_publish.py', 'authority_batch.py', 'production_worker.py', 'checkpoint_io.py', 'storefront.py', 'public_suffix_list.dat', 'scan_policy.py', 'catalogue_audit.py', 'commerce_capture.py', 'evidence_ai_rules.py', 'evidence_ai_gate.py'):
         h.update(Path(__file__).with_name(name).read_bytes())
     return h.hexdigest()
 
