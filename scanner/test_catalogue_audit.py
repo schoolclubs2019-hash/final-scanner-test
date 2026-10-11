@@ -534,7 +534,8 @@ class AuditTest(unittest.TestCase):
                 with self.store.db:
                     self.store.db.execute('INSERT OR REPLACE INTO pages(run_id,url,data) VALUES(?,?,?)',
                                           (self.run_id, key, payload))
-                with self.assertRaises(ValueError):
+                expected = 'Invalid commercial pair checkpoint' if label == 'partial' else 'Expecting value'
+                with self.assertRaisesRegex(ValueError, expected):
                     self.export('commerce-' + label)
 
 if __name__ == '__main__':
