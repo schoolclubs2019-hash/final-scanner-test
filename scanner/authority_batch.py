@@ -553,7 +553,9 @@ def worker(state_dir, name, config_path, render=False, publish=False, phase='fir
                 row['worker_error'] = type(exc).__name__
                 results.append(row)
                 print(json.dumps(row, ensure_ascii=False), flush=True)
-                break
+                # A failed brand must not starve subsequent independent brands.
+                # The worker still exits nonzero and first-pass checkpoint is withheld.
+                continue
             results.append(row)
             print(json.dumps(row, ensure_ascii=False), flush=True)
         if policy is not None and phase == 'first' and not drained and not any(row.get('worker_error') for row in results):
