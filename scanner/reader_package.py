@@ -11,6 +11,7 @@ import tempfile
 import zipfile
 
 from throne_api import scanner_fingerprint
+from throne_standard import STANDARD_PATH
 
 
 FILES = (
@@ -28,7 +29,7 @@ def build(output):
     output = Path(output).resolve()
     output.parent.mkdir(parents=True, exist_ok=True)
     entries = {name: source / name for name in FILES}
-    entries['throne_standard.json'] = source.parents[1] / '_Shared/Throne-Standard/throne_standard.json'
+    entries['throne_standard.json'] = STANDARD_PATH
     temporary = output.with_suffix('.tmp')
     try:
         with zipfile.ZipFile(temporary, 'w', compression=zipfile.ZIP_DEFLATED) as archive:
