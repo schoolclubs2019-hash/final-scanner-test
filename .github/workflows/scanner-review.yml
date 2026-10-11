@@ -22,4 +22,4 @@ jobs:
         run: curl --fail --silent --show-error --location --max-time 30 https://publicsuffix.org/list/public_suffix_list.dat --output scanner/public_suffix_list.dat
       - name: Run regression suite
         working-directory: scanner
-        run: python -m unittest test_authority test_authority_batch test_commerce_capture test_catalogue_audit test_coderabbit_hardening -q
+        run: python -m unittest test_authority test_authority_batch test_commerce_capture test_catalogue_audit test_coderabbit_hardening test_coderabbit_audit_pairs test_deferred_coordinator test_pipeline.PipelineTest.test_large_catalogue_http_throughput_and_write_bound -q
