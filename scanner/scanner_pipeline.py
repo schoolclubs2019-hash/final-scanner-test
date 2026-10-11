@@ -934,9 +934,24 @@ def main():
                     # publish() verifies its canonical package, integrity and eligibility.
                     run = store.run(run_id)
                 else:
-                    http = PublicHTTP(brand['domain'], requests_per_second=float(brand.get('requests_per_second', 2)))
-                    run = run_brand(store, run_id, http, renderer, args.retry or args.resume,
-                                    json.loads(args.manual.read_text()) if args.manual else None)
+                    try:
+                        http = PublicHTTP(brand['domain'], requests_per_second=float(brand.get('requests_per_second', 2)))
+                        run = run_brand(store, run_id, http, renderer, args.retry or args.resume,
+                                        json.loads(args.manual.read_text()) if args.manual else None)
+                    except (FetchError, ValueError, ContractError) as exc:
+                        # A bad brand must not terminate the unrelated catalogue.
+                        # Explicit publication remains fail-fast to protect its contract.
+                        if args.publish or args.publish_staging:
+                            raise
+                        store.update(run_id, status='REPAIR_REQUIRED', scanner_status='HELD',
+                                     integrity_status='FAIL', publish_eligible=False,
+                                     error=getattr(exc, 'state', str(exc)))
+                        run = store.run(run_id)
+                        console(run, f'{index}/{len(selected)}')
+                        print(json.dumps(unresolved_report(store, run_id), indent=2))
+                        completed_runs.append(run)
+                        store.export(args.db.with_suffix('.manifest.json'))
+                        continue
                 if live:
                     from htt_publish import publish
                     api, reader, live_config, live_transport, intake = live
