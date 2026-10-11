@@ -271,7 +271,7 @@ def make_client(endpoint, resource=None, resource_group=None):
         provider=json.loads(raw)['key1']
     else:
         provider=get_bearer_token_provider(AzureCliCredential(), 'https://cognitiveservices.azure.com/.default')
-    return OpenAI(base_url=endpoint.rstrip('/')+'/openai/v1/',api_key=[REDACTED],
+    return OpenAI(base_url=endpoint.rstrip('/')+'/openai/v1/',api_key=provider,
                   max_retries=0,timeout=60)
 
 def blind_review(client, model, packet):
