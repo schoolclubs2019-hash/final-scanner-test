@@ -63,7 +63,7 @@ def _verify_packet_once(packet,row,reviewer):
         'python_parity':parity,'pass':passed,**metadata}
 
 def verify_item(item,row,html=""):
-    if row.get('terminal_state') in {'excluded_accessory','excluded_nontextile'}:
+    if row.get('scoreable') is not True:
         return row
     packet=source_packet(item,html=html,captured_at=item.get('fetchedAt'))
     # Never silently clip sources or feed the score to AI.
