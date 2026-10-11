@@ -63,6 +63,8 @@ def shopify_ajax_capture(item, product_response, cart_response, checked_at, cont
     if product_response.url != endpoint or cart_response.url != cart_endpoint:
         raise CommerceEvidenceError('commercial_response_identity_mismatch')
     obj, cart = product_response.json(), cart_response.json()
+    if not isinstance(obj, dict) or not isinstance(cart, dict):
+        raise CommerceEvidenceError('commercial_payload_schema_invalid')
     pid = str(item.get('product_id') or item.get('platform_product_id') or '')
     if (not pid or str(obj.get('id')) != pid or obj.get('handle') != root[1].rstrip('/')
             or urljoin(url, obj.get('url', '')) != url.rstrip('/')):
