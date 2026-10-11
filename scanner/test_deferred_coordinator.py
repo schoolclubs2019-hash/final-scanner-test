@@ -160,3 +160,42 @@ class DeferredCoordinatorTest(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+
+
+class CoordinatorScaleBenchmark(unittest.TestCase):
+    def test_large_multi_shard_deferred_report_and_revisit_rounds(self):
+        import time
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            policy = normalize_policy({
+                'workers': 4, 'max_revisit_passes': 3, 'first_pass_seconds': 100,
+                'revisit_seconds': 200, 'first_inline_wait_seconds': 0,
+                'revisit_inline_wait_seconds': 0, 'max_coordinator_wait_seconds': 0,
+            })
+            config = root / 'config.json'
+            config.write_text(json.dumps({'execution_policy': policy}))
+            (root / 'queue-digest').write_text('synthetic-queue-160')
+            for shard in range(1, 5):
+                name = f'W{shard}'
+                store = Store(root / f'{name}.db')
+                try:
+                    records = [
+                        {**brand(shard * 1000 + i, f'Brand {shard}-{i}',
+                                 f'https://brand-{shard}-{i}.test'),
+                         'execution_policy': policy}
+                        for i in range(40)
+                    ]
+                    store.enqueue(records)
+                finally:
+                    store.close()
+                (root / f'{name}.first-pass.json').write_text(json.dumps({
+                    'scanner_fingerprint': pipeline_fingerprint(),
+                    'execution_policy': policy, 'completed_at': 123}))
+            start = time.perf_counter()
+            report = coordinate_bulk(root, config, sweep=lambda *_: self.fail('No network worker expected'),
+                                     clock=lambda: 123, sleep=lambda _: self.fail('No waiting expected'))
+            elapsed = time.perf_counter() - start
+            self.assertEqual(len(report['remaining']), 160)
+            self.assertEqual(report['revisit_round'], 4)
+            self.assertEqual(report['status'], 'INCOMPLETE')
+            self.assertLess(elapsed, 15, 'Deferred revisit scheduler throughput regressed')
