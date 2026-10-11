@@ -166,7 +166,8 @@ def source_packet(item, html='', captured_at=None):
         # These sources are discovered independently by BeautifulSoup rather
         # than selected from the percentage regex's winning excerpts.
         for n,panel in enumerate(main.select('.product__info__wrapper, [id^="ProductInfo-"], .product-info')):
-            if normalize_space(item['title']).casefold() not in normalize_space(panel.get_text(' ',strip=True)).casefold():
+            title = normalize_space(item.get('title') or '').casefold()
+            if not title or title not in normalize_space(panel.get_text(' ',strip=True)).casefold():
                 continue
             add('html.product_info.'+str(n),panel.get_text(' ',strip=True),str(panel))
         for n,panel in enumerate(main.select('.faq-list__item')):
