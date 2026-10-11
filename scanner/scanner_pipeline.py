@@ -78,10 +78,15 @@ def recover_rendered_confirmation(store, run_id, url, probe_url=None):
     if (failure.get('url') not in recovered_urls or failure.get('state') != 'EXHAUSTED'
             or run.get('status') != 'FAILED' or run.get('error') != 'authority_retry_exhausted'):
         return
-    recovered = dict(run.get('rendered_recoveries') or {})
-    recovered[url] = {**failure, 'confirmation_source': 'rendered_html'}
+    # Store recovery by URL; rewriting a growing run JSON map on every product
+    # is quadratic for large catalogues and risks losing earlier evidence.
+    with store.db:
+        store.db.execute('INSERT OR REPLACE INTO rendered_recovery VALUES(?,?,?)',
+                         (run_id, url, json.dumps({**failure, 'confirmation_source': 'rendered_html'})))
+    count = store.db.execute('SELECT COUNT(*) FROM rendered_recovery WHERE run_id=?',
+                             (run_id,)).fetchone()[0]
     store.update(run_id, status='RUNNING', error=None, authority_retry=None,
-                 rendered_recoveries=recovered)
+                 rendered_recoveries_count=count)
 
 
 def recoverable_product_transition(store, run_id, renderer):
