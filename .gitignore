@@ -1,0 +1,17 @@
+.env
+.env.*
+*.sqlite
+*.sqlite3
+*.db
+*.db-*
+*.pem
+*.key
+*credentials*
+*secret*
+*token*
+*.log
+__pycache__/
+.pytest_cache/
+.venv/
+venv/
+.DS_Store
