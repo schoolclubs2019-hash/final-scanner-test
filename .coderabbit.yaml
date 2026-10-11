@@ -1,0 +1,12 @@
+language: en-US
+reviews:
+  profile: assertive
+  request_changes_workflow: true
+  high_level_summary: true
+  poem: false
+  auto_review:
+    enabled: true
+    drafts: true
+  path_instructions:
+    - path: "scanner/**/*.py"
+      instructions: "Audit durable checkpoints, immutable fingerprints, correct evidence extraction, first-party source integrity, bounded retries, large catalogue completion, per-shard locks, truthful canonical scores, audit receipts, resource budgets, and zero WordPress writes. Demand test cases and speed benchmarks."
