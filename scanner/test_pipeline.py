@@ -532,6 +532,22 @@ class PipelineTest(unittest.TestCase):
             def get(self,url):raise AssertionError('Unexpected fetch')
         result=run_brand(self.store,rid,HTTP(),manual=[product(i,manual_evidence_verified=True) for i in range(1,5002)])
         self.assertEqual((result['processed'],result['unaccounted'],result['canonical']['coverage'],result['canonical']['score']),(5001,0,100,5));self.assertEqual(result['status'],'SCANNER_COMPLETE')
+    def test_large_catalogue_http_throughput_and_write_bound(self):
+        # Real in-process HTTP catalogue pagination and product requests;
+        # no manually injected complete product records.
+        import time
+        with FixtureServer(180) as server:
+            run_id = self.new_run(server.base)
+            started = time.perf_counter()
+            result = run_brand(self.store, run_id, server.http())
+            elapsed = time.perf_counter() - started
+            events = self.store.db.execute(
+                'SELECT COUNT(*) FROM events WHERE run_id=?', (run_id,)).fetchone()[0]
+            self.assertEqual(result['processed'], 180)
+            self.assertEqual(result['status'], 'SCANNER_COMPLETE')
+            self.assertLess(elapsed, 45, 'Catalogue HTTP throughput regressed')
+            self.assertLess(events, 180 * 60, 'Excessive checkpoint writes per product')
+
     def test_process_killed_mid_brand_and_batch(self):
         with FixtureServer(305) as s:
             for checkpoint in (7,300):
