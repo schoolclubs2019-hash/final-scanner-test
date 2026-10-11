@@ -121,7 +121,23 @@ def prepare_manifest(queue, state, records, workers, config, render, stop_reques
     if intent_path.exists() and json.loads(intent_path.read_text()) != request:
         raise ValueError('Manifest preparation intent changed')
     if any(state.glob('W*.db')) or any(state.glob('W*.json')) or (state / 'queue-digest').exists():
-        raise ValueError('Unattested or incomplete durable shards; use a new state, never reset existing work')
+        # Crash after prepare() but before publishing launch-manifest.json:
+        # recover only the identical durable intent and complete shard inventory.
+        if not intent_path.exists() or json.loads(intent_path.read_text()) != request:
+            raise ValueError('Unattested durable shards; immutable launch intent missing or changed')
+        snapshot = state / 'launch-queue.json'
+        if not snapshot.exists() or json.loads(snapshot.read_text()) != records:
+            raise ValueError('Durable input queue snapshot changed or incomplete')
+        assignments = shard_manifest(state, workers, request['identities'],
+                                     request['scanner_fingerprint'])
+        digest_path = state / 'queue-digest'
+        if digest_path.exists() and digest_path.read_text().strip() != request['queue_digest']:
+            raise ValueError('Durable queue digest changed')
+        if not digest_path.exists() and normalize_policy(config.get('execution_policy')) is not None:
+            checkpoint_json(digest_path, request['queue_digest'])
+        saved = {'request': request, 'assignments': assignments}
+        checkpoint_json(manifest_path, saved)
+        return saved
     if not intent_path.exists():
         checkpoint_json(intent_path, request)
     snapshot = state / 'launch-queue.json'
