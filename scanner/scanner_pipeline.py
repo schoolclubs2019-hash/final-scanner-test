@@ -580,7 +580,7 @@ def run_brand(store, run_id, http, renderer=None, retry=False, manual=None, budg
                 item['fetchedAt'] = now()
             rows, _ = read_products([item], payload, True)
             row = rows[0]
-            if run.get('independent_ai_review') is True:
+            if run.get('independent_ai_review') is True and row.get('scoreable') is True:
                 from evidence_ai_gate import verify_item
                 row = verify_item(item, row, html=response.text if not (item.get('manual_evidence_verified') is True or item.get('_reuse_raw_evidence') is True) else '')
             if (run.get('require_commerce_capture') is True or run.get('capture_commerce') is True) and row.get('terminal_state') not in {'excluded_accessory','excluded_nontextile'}:
@@ -640,7 +640,7 @@ def run_brand(store, run_id, http, renderer=None, retry=False, manual=None, budg
         blockers.append('SCAN_INTEGRITY_FAIL')
     ai_eligible=ai_passed=0
     for r in rows:
-        if r.get('terminal_state') not in {'excluded_accessory','excluded_nontextile'}:
+        if r.get('scoreable') is True or r.get('independent_review') is not None:
             ai_eligible+=1
             ai_passed+=int((r.get('independent_review') or {}).get('pass') is True)
     if run.get('independent_ai_review') is True and ai_passed!=ai_eligible:
