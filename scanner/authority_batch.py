@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Durable domain-affine batch runner for authority scans and verified HTT publication."""
 import argparse
+import hashlib
 import os
 import fcntl
 import json
@@ -75,6 +76,21 @@ def verify_saved_audit(store, run):
     return proof
 
 
+def _audit_source_digest(store, run_id):
+    """Stream a deterministic digest of stored evidence without creating a new export."""
+    digest = hashlib.sha256()
+    queries = (
+        'SELECT url,data FROM pages WHERE run_id=? ORDER BY url',
+        'SELECT identity,item,result,state,retryable,attempts,discovery,discovery_hash,delta,reused_from FROM products WHERE run_id=? ORDER BY identity',
+        'SELECT ordinal,identity,reason FROM candidates WHERE run_id=? ORDER BY ordinal',
+    )
+    for query in queries:
+        for row in store.db.execute(query, (run_id,)):
+            digest.update(repr(row).encode('utf-8'))
+            digest.update(b'\\n')
+    return digest.hexdigest()
+
+
 def export_visit_audit(store, run_id, state):
     """Export and verify saved evidence after a visit, including paused visits."""
     run = store.run(run_id)
@@ -84,8 +100,10 @@ def export_visit_audit(store, run_id, state):
     event_seq = store.db.execute(
         'SELECT COALESCE(MAX(sequence),0) FROM events WHERE run_id=?',
         (run_id,)).fetchone()[0]
+    source_digest = _audit_source_digest(store, run_id)
     if (run.get('audit_export_status') == 'PASS'
             and run.get('audit_export_event_sequence') == event_seq
+            and run.get('audit_export_source_digest') == source_digest
             and run.get('audit_export_visit_number') == visit.get('number')
             and run.get('audit_export_visit_state') == visit.get('state')
             and run.get('audit_export_path')):
@@ -109,6 +127,7 @@ def export_visit_audit(store, run_id, state):
                      audit_export_catalogue_status=verified['catalogue_status'],
                      audit_export_sitemap_status=verified['sitemap_status'],
                      audit_export_event_sequence=event_seq + 1,
+                     audit_export_source_digest=source_digest,
                      audit_export_visit_number=visit.get('number'),
                      audit_export_visit_state=visit.get('state'))
     except Exception as exc:
