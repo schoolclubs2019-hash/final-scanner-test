@@ -22,6 +22,7 @@ from scanner_pipeline import (
     run_brand,
 )
 from scanner_store import Store
+from checkpoint_io import checkpoint_json
 from scan_policy import (ScanPaused, PAUSE_REASONS, begin_visit, finish_visit,
                          normalize_policy, pause_visit, revisit_state, with_policy)
 from throne_read import READER_VERSION
@@ -560,10 +561,8 @@ def worker(state_dir, name, config_path, render=False, publish=False, phase='fir
             print(json.dumps(row, ensure_ascii=False), flush=True)
         if policy is not None and phase == 'first' and not drained and not any(row.get('worker_error') for row in results):
             checkpoint = state / f'{name}.first-pass.json'
-            temporary = checkpoint.with_suffix('.tmp')
-            temporary.write_text(json.dumps({'scanner_fingerprint': pipeline_fingerprint(),
-                                             'execution_policy': policy, 'completed_at': time.time()}))
-            temporary.replace(checkpoint)
+            checkpoint_json(checkpoint, {'scanner_fingerprint': pipeline_fingerprint(),
+                                         'execution_policy': policy, 'completed_at': time.time()})
         return results
     finally:
         ownership.__exit__(None, None, None)
