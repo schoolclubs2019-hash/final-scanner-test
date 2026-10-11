@@ -81,6 +81,17 @@ def export_visit_audit(store, run_id, state):
     if run.get('execution_policy') is None and run.get('sitemap_audit_policy') is None:
         return run
     visit = run.get('scan_visit') or {}
+    event_seq = store.db.execute(
+        'SELECT COALESCE(MAX(sequence),0) FROM events WHERE run_id=?',
+        (run_id,)).fetchone()[0]
+    if (run.get('audit_export_status') == 'PASS'
+            and run.get('audit_export_event_sequence') == event_seq
+            and run.get('audit_export_visit_number') == visit.get('number')
+            and run.get('audit_export_visit_state') == visit.get('state')
+            and run.get('audit_export_path')):
+        saved = audit_snapshot_path(state, run['audit_export_path'])
+        if saved.is_dir():
+            return run
     try:
         if Path(str(run_id)).name != str(run_id) or str(run_id) in {'.', '..'}:
             raise ValueError('Invalid audit run directory')
@@ -96,7 +107,10 @@ def export_visit_audit(store, run_id, state):
                      audit_export_path=str(relative),
                      audit_export_manifest_sha256=verified['manifest_sha256'],
                      audit_export_catalogue_status=verified['catalogue_status'],
-                     audit_export_sitemap_status=verified['sitemap_status'])
+                     audit_export_sitemap_status=verified['sitemap_status'],
+                     audit_export_event_sequence=event_seq + 1,
+                     audit_export_visit_number=visit.get('number'),
+                     audit_export_visit_state=visit.get('state'))
     except Exception as exc:
         # A saved export is separate from truthful catalogue/sitemap completeness.
         store.update(run_id, audit_export_status='FAIL', audit_export_error=type(exc).__name__,
