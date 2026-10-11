@@ -321,10 +321,15 @@ def propagate(store, run_id, config, transport, rows):
     if run['integrity_status'] != 'PASS' or not run['publish_eligible']:
         raise ContractError('Canonical publication gate failed')
     from scanner_store import digest
-    store.update(run_id, propagation_contract_hash=digest(config))
     protocol = config.get('publication', {})
     if protocol.get('contract') != 'htt-generations-v1':
         raise ContractError('Atomic staging publication contract NOT CONFIGURED')
+    contract_hash = digest(config)
+    saved_hash = run.get('propagation_contract_hash')
+    if saved_hash is not None and saved_hash != contract_hash:
+        raise ContractError('Publication contract changed during propagation')
+    if saved_hash is None:
+        store.update(run_id, propagation_contract_hash=contract_hash)
 
     def write(action, body):
         spec = protocol.get(action)
