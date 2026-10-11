@@ -485,7 +485,7 @@ def export_audit(db_path, run_id, output, *, max_export_bytes=268_435_456):
         candidates = [dict(zip(('ordinal', 'identity', 'reason'), row)) for row in db.execute(
             'SELECT ordinal,identity,reason FROM candidates WHERE run_id=? ORDER BY ordinal', (run_id,))]
         event = db.execute('SELECT MAX(sequence) FROM events WHERE run_id=?', (run_id,)).fetchone()[0]
-        tables = {row[0] for row in db.execute('SELECT name FROM sqlite_master WHERE type="table"')}
+        tables = {row[0] for row in db.execute("SELECT name FROM sqlite_master WHERE type='table'")}
         retries = [dict(zip(('url', 'attempts', 'retry_at', 'state', 'total_429'), row)) for row in db.execute(
             'SELECT url,attempts,retry_at,state,total_429 FROM authority_retries WHERE run_id=? ORDER BY url',
             (run_id,))] if 'authority_retries' in tables else []
