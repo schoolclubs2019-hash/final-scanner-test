@@ -1,0 +1,823 @@
+{
+  "standard_id": "htt-throne-standard",
+  "version": "1.3.2",
+  "effective_date": "2026-10-06",
+  "scope": {
+    "departments": [
+      "clothing",
+      "bedding",
+      "beauty",
+      "food",
+      "supplements",
+      "pet",
+      "homeware",
+      "jewellery",
+      "candles",
+      "electronics"
+    ],
+    "categories": {
+      "textile": [
+        "clothing",
+        "bedding",
+        "home textiles"
+      ],
+      "inci": [
+        "beauty",
+        "body-bath"
+      ],
+      "ingredient": [
+        "food",
+        "supplements",
+        "pet food"
+      ],
+      "material": [
+        "homeware",
+        "jewellery",
+        "candles",
+        "electronics"
+      ]
+    }
+  },
+  "evidence": {
+    "hierarchy": [
+      "sku_variant_structured_composition",
+      "product_specific_composition_field",
+      "structured_product_description_attributable_to_current_product",
+      "explicit_percentage_product_tag",
+      "controlled_product_page_extraction"
+    ],
+    "accepted_sources": [
+      "variant composition",
+      "product composition/material field",
+      "product-specific description",
+      "explicit percentage-bearing product tag",
+      "explicit product-page composition label",
+      "product JSON",
+      "JSON-LD Product/Offer"
+    ],
+    "rejected_types": [
+      "navigation",
+      "footer",
+      "collection",
+      "recommendation",
+      "related product",
+      "recently viewed",
+      "lookbook",
+      "editorial",
+      "category description",
+      "review",
+      "unrelated FAQ",
+      "SEO boilerplate",
+      "unrelated image alt text",
+      "cross-sell styling",
+      "appearance analogy",
+      "negated material",
+      "unattributed page-wide material word"
+    ],
+    "attribution": {
+      "rule": "A material may affect a product result only when the evidence source identifies the product or an explicitly labeled component of that product.",
+      "cross_sell_examples": [
+        "Pair this with linen shorts",
+        "Model wears cotton trousers",
+        "Shop the matching denim jacket"
+      ],
+      "appearance_examples": [
+        "silk-like",
+        "silky feel",
+        "cashmere-soft",
+        "wool-like",
+        "leather-look",
+        "suede effect",
+        "denim look",
+        "linen-inspired",
+        "softness of cashmere"
+      ],
+      "negation_examples": [
+        "leather-free",
+        "no wool",
+        "without polyester",
+        "PVC-free",
+        "not made with silk"
+      ]
+    },
+    "conflicts": {
+      "rule": "Do not silently select between disagreeing strong product-specific sources. Record the conflict and withhold an authoritative classification pending review.",
+      "strong_sources": [
+        "sku_variant_structured_composition",
+        "product_specific_composition_field"
+      ]
+    },
+    "lossless_capture": "Preserve raw composition, product description, accepted declaration, exact source identity, capture date and reader/Standard versions. Recalculate from raw captures, never shortened display fields. A bare material summary cannot override a compatible complete product declaration."
+  },
+  "material_taxonomy": {
+    "plant": {
+      "cotton": [
+        "organic cotton",
+        "recycled cotton",
+        "pima",
+        "supima",
+        "cotone",
+        "coton",
+        "baumwolle",
+        "katoen",
+        "algodon",
+        "algodao"
+      ],
+      "linen": [
+        "flax",
+        "lino",
+        "leinen",
+        "lin",
+        "vlas"
+      ],
+      "hemp": [
+        "canapa",
+        "chanvre",
+        "hanf"
+      ],
+      "jute": [],
+      "ramie": [],
+      "nettle": [],
+      "abaca": [],
+      "sisal": [],
+      "coir": [],
+      "kapok": [],
+      "straw": [],
+      "paper": [
+        "paper yarn"
+      ],
+      "raffia": [
+        "palm"
+      ],
+      "flax fibre": []
+    },
+    "animal": {
+      "wool": [
+        "merino",
+        "lambswool",
+        "lana",
+        "laine",
+        "wolle",
+        "alpaca",
+        "mohair",
+        "angora",
+        "llama",
+        "vicuna",
+        "vicuña",
+        "yak",
+        "camel hair"
+      ],
+      "silk": [
+        "seta",
+        "soie",
+        "seide"
+      ],
+      "cashmere": [
+        "cachemire",
+        "kaschmir",
+        "cachemir"
+      ],
+      "leather": [
+        "suede",
+        "hide",
+        "hides",
+        "pelt",
+        "fur",
+        "deerskin",
+        "lambskin",
+        "goatskin",
+        "calfskin",
+        "kidskin",
+        "sheepskin",
+        "buckskin",
+        "mink",
+        "rabbit",
+        "sable",
+        "beaver",
+        "astrakhan",
+        "shearling"
+      ],
+      "down": [
+        "feather",
+        "feathers"
+      ],
+      "camel": [],
+      "cashmere hair": []
+    },
+    "synthetic": {
+      "elastane": [
+        "elastic",
+        "spandex",
+        "lycra",
+        "elastam",
+        "elastan",
+        "elastano",
+        "elasthan"
+      ],
+      "polyester": [
+        "poliestere",
+        "poliester"
+      ],
+      "nylon": [
+        "polyamide",
+        "poliammide",
+        "polyamid",
+        "nailon"
+      ],
+      "acrylic": [
+        "acrilico",
+        "acrilic",
+        "akryl"
+      ],
+      "polyurethane": [
+        "pu"
+      ],
+      "rubber": [],
+      "vinyl": [],
+      "elastomultiester": [],
+      "polypropylene": [],
+      "pvc": [],
+      "latex": []
+    },
+    "semi_synthetic": {
+      "viscose": [
+        "rayon",
+        "viscosa",
+        "viskose",
+        "bamboo",
+        "ecovero"
+      ],
+      "modal": [],
+      "lyocell": [
+        "tencel"
+      ],
+      "cupro": [],
+      "acetate": []
+    }
+  },
+  "composition": {
+    "complete_percentage_total": 100,
+    "tolerance_percentage_points": 0.05,
+    "incomplete_percentages": "Retain known percentages and unknown remainder; do not score the whole product unless its declared composition is complete within tolerance. Impossible totals are evidence errors.",
+    "unquantified_materials": "Record presence and classification only. Do not invent percentages or imply equal shares.",
+    "made_with": "A material named after 'made with' is present; quantity remains unknown unless explicitly stated.",
+    "contains": "A named material is present; quantity remains unknown unless explicitly stated.",
+    "unweighted_material_classes": "Classify the named materials; do not derive a quantitative share.",
+    "percentage_parsing": [
+      "Pair each percentage with the nearest attributable material in a composition clause.",
+      "Reject unrelated sale, water-saving, care, or promotional percentages.",
+      "Keep separate component percentages separate.",
+      "A listed set of percentages is complete only when it totals 100 within tolerance."
+    ],
+    "components": {
+      "recognized": [
+        "body",
+        "shell",
+        "lining",
+        "filling",
+        "upper",
+        "sole",
+        "trim",
+        "hardware",
+        "coating",
+        "padding",
+        "insulation",
+        "straps"
+      ],
+      "unknown_component_weight": "Never invent equal or physical component weights. Component shares remain separate; identical class-share vectors produce an invariant product share.",
+      "equal_component_fallback": {
+        "enabled": false,
+        "when": "Every explicitly listed component has a complete 100% composition, and no component weight is published.",
+        "method": "Do not infer physical component weights. Show component-level declarations; withhold whole-product share unless published weights exist or all component class-share vectors are identical.",
+        "report_flag": "component_incomplete",
+        "required_explanation": "Separate component composition is available; overall component weights are not published."
+      }
+    }
+  },
+  "disclosure": {
+    "undisclosed_state": "UNDISCLOSED",
+    "definition": "Successfully inspected product with no usable published composition. Partial declarations and technical failures are separate states.",
+    "score_credit": null,
+    "classification_implication": "None; undisclosed is not synthetic, non-plant, or a negative material finding.",
+    "separate_metric": true,
+    "transparency_threshold_percent": 25,
+    "threshold_is_statistical_guarantee": false,
+    "score_treatment": "No numerical composition contribution; affects evidence coverage only."
+  },
+  "catalogue": {
+    "target": "Census of the entire eligible catalogue.",
+    "eligible_product_evidence": [
+      "platform product/variant ID",
+      "SKU",
+      "Product schema",
+      "commerce product JSON",
+      "verified product URL"
+    ],
+    "reject_pages": [
+      "runway",
+      "editorial",
+      "collection",
+      "category",
+      "search",
+      "account",
+      "store locator",
+      "lookbook",
+      "static page"
+    ],
+    "deduplication_precedence": [
+      "platform product ID",
+      "variant/SKU ID",
+      "canonical URL",
+      "stable product fingerprint",
+      "fallback identity"
+    ],
+    "locale_policy": "Do not combine markets or locales in one catalogue. Record market, locale, host, and currency.",
+    "incremental_policy": [
+      "resume from checkpoints",
+      "retry failed products only",
+      "reuse unexpired raw evidence",
+      "re-score cached evidence after Standard changes",
+      "delta-scan changed products"
+    ]
+  },
+  "technical_failures": {
+    "states": [
+      "UNREAD",
+      "BLOCKED",
+      "TIMEOUT",
+      "READER_ERROR",
+      "EVIDENCE_CONFLICT"
+    ],
+    "must_not_become_undisclosed": true,
+    "verified_full_scan_target_unread": 0,
+    "score_policy": "Exclude failed products from composition arithmetic. Retain failure counts, retry them, and scope any displayed result to assessed products. Never label partial evidence as a verified full-catalogue score."
+  },
+  "scoring": {
+    "textile_formula": "mean(declared_plant_fibre_percent for eligible products with complete quantified composition)",
+    "textile_rate_name": "composition_plant_share_pct",
+    "disclosed_only_rate_name": "plant_rate_among_disclosed_products",
+    "undisclosed_treatment": "Excluded from the composition-score denominator; counted in composition coverage and missing-evidence reporting. No material finding is inferred.",
+    "nontextile_treatment": "Non-textile products and accessories are explicitly classified, retained for catalogue reconciliation, and excluded from the textile eligible denominator, textile score, missing-composition blockers, and textile price coverage.",
+    "score_bands": [
+      {
+        "score": 5,
+        "label": "Complete verified plant evidence",
+        "minimum_percent": 100,
+        "maximum_percent_exclusive": null
+      },
+      {
+        "score": 4,
+        "label": "Very high verified plant evidence",
+        "minimum_percent": 90,
+        "maximum_percent_exclusive": 100
+      },
+      {
+        "score": 3,
+        "label": "High verified plant evidence",
+        "minimum_percent": 70,
+        "maximum_percent_exclusive": 90
+      },
+      {
+        "score": 2,
+        "label": "Moderate verified plant evidence",
+        "minimum_percent": 40,
+        "maximum_percent_exclusive": 70
+      },
+      {
+        "score": 1,
+        "label": "Low verified plant evidence",
+        "minimum_percent": 0,
+        "maximum_percent_exclusive": 40
+      }
+    ],
+    "animal_floor": {
+      "enabled": true,
+      "ratio": "animal / (animal + synthetic + semi_synthetic)",
+      "minimum_share_percent": 95,
+      "minimum_score": 2
+    },
+    "subset_minimum_skus": 20,
+    "subset_minimum_is_census_requirement": false,
+    "score_status": {
+      "census": "verified only when every eligible product has a complete quantified composition and no technical failures",
+      "sample": "sampled_estimate with confidence interval",
+      "readable_subset": "partial_scan: score describes fully quantified assessed products only, with at least 20 assessed products; never the unknown catalogue remainder",
+      "technical_gap": "partial_scan; do not relabel failures as undisclosed"
+    },
+    "beauty_formula": "Share of fully assessed products whose complete ingredient declaration meets the INCI purity rule; not a concentration or weight percentage. Use the shared score bands; unresolved ingredient declarations block an authoritative beauty catalogue score.",
+    "textile_score_labels": {
+      "1": "Below 40% plant fibre in assessed products",
+      "2": "At least 40% plant fibre in assessed products",
+      "3": "At least 70% plant fibre in assessed products",
+      "4": "At least 90% plant fibre in assessed products",
+      "5": "100% plant fibre in assessed products"
+    },
+    "aggregation_unit": "One confirmed product/attributable composition variant, equally weighted by product, not by assumed sales or physical garment mass. Preserve market and source-store identity.",
+    "coverage_formula": "fully_quantified_eligible_products / identified_eligible_products * 100",
+    "missing_evidence_policy": "Unknown, undisclosed, unread, conflicting and unquantified compositions reduce coverage only. They cannot be scored as 0% plant, synthetic, animal or semi-synthetic.",
+    "scope_policy": "A full-catalogue composition score requires all eligible compositions. Otherwise the number describes assessed products only; count, coverage, capture date and missing count must accompany it. A non-random subset is never a statistical estimate of unassessed products.",
+    "catalogue_bounds": "Show minimum and maximum possible whole-catalogue plant share separately, assigning each unknown product 0% and 100% respectively. Bounds are not scores or confidence intervals."
+  },
+  "sampling": {
+    "preferred_method": "full_census",
+    "fallback_only_when_census_impossible": true,
+    "confidence_level": 0.95,
+    "target_margin_of_error": 0.05,
+    "conservative_proportion": 0.5,
+    "finite_population_correction": true,
+    "minimum_subset_size": 20,
+    "selection": [
+      "random",
+      "appropriately_stratified"
+    ],
+    "forbidden_selection": "first_n_products",
+    "large_population_approximation": 385,
+    "continue_if_interval_crosses_score_boundary": true,
+    "composition_interval": "For an explicitly random sample whose eligible selected products all have complete compositions, use a conservative 95% bounded-mean interval (Hoeffding). Missing selected products withhold catalogue inference. Opportunistic assessed subsets have no population-confidence claim."
+  },
+  "quality_flags": [
+    "low_disclosure",
+    "technical_gap",
+    "sampled",
+    "small_subset",
+    "locale_mixed",
+    "price_partial",
+    "component_incomplete",
+    "evidence_conflict",
+    "catalogue_partial",
+    "composition_partial",
+    "composition_over_100"
+  ],
+  "price_fields": {
+    "fields": [
+      "current_price",
+      "currency",
+      "regular_price",
+      "compare_at_price",
+      "sale_price",
+      "variant_price",
+      "product_price_min",
+      "product_price_max",
+      "availability",
+      "price_checked_at",
+      "market",
+      "locale"
+    ],
+    "source_precedence": [
+      "commerce_product_json",
+      "jsonld_offer",
+      "structured_metadata",
+      "embedded_product_state",
+      "dom_fallback"
+    ],
+    "missing_value": null,
+    "zero_is_missing_sentinel": false,
+    "currency_conversion": "Never silently convert currencies.",
+    "variant_range": "Do not present a minimum variant price as the price of every variant."
+  },
+  "department_modules": {
+    "clothing": "textile_composition",
+    "bedding": "textile_composition",
+    "beauty": "inci",
+    "body-bath": "inci",
+    "food": "ingredient_list",
+    "supplements": "ingredient_list",
+    "pet": "ingredient_list_or_material_by_subcategory",
+    "homeware": "product_material",
+    "jewellery": "product_material",
+    "candles": "wax_wick_fragrance_components",
+    "electronics": "product_material_and_repairability"
+  },
+  "field_ownership": {
+    "scanner_owned": {
+      "fields": [
+        "accessory",
+        "animal",
+        "animal_dominance_qualifies",
+        "animal_floor_applied",
+        "animal_floor_explanation",
+        "animal_pct",
+        "animal_share_of_classified_nonplant",
+        "blended",
+        "catalogue_explanation",
+        "catalogue_plant_share_lower_bound",
+        "catalogue_plant_share_upper_bound",
+        "catalogue_products_identified",
+        "catalogue_total",
+        "composition_assessed_count",
+        "composition_coverage_pct",
+        "composition_missing_count",
+        "composition_plant_share_pct",
+        "composition_score_scope",
+        "coverage_count",
+        "coverage_explanation",
+        "coverage_pct",
+        "coverage_rate",
+        "coverage_read",
+        "coverage_total",
+        "currency",
+        "disclosed",
+        "disclosure_count",
+        "disclosure_explanation",
+        "disclosure_rate",
+        "duplicate_count",
+        "duplicate_reasons",
+        "eco_score",
+        "eligible_textile_skus",
+        "eligible_total",
+        "excluded_accessory",
+        "excluded_count",
+        "excluded_nontextile",
+        "excluded_note",
+        "full_catalogue_reason",
+        "full_catalogue_scan",
+        "full_catalogue_verified_plant_evidence_rate",
+        "last_checked",
+        "methodology_version",
+        "nontextile",
+        "observed_score",
+        "out_of_scope_count",
+        "plant_pct",
+        "plant_rate_among_disclosed_products",
+        "policy_version",
+        "price_coverage_count",
+        "price_coverage_pct",
+        "price_coverage_total",
+        "price_max",
+        "price_min",
+        "products_on_sale_count",
+        "publication_label",
+        "publication_status",
+        "publication_status_explanation",
+        "pure_plant",
+        "qualification_note",
+        "quality_flags",
+        "readable_textile_skus",
+        "reader_faults",
+        "reader_version",
+        "scan_coverage",
+        "scan_locale",
+        "scan_market",
+        "scan_note",
+        "scanned_at",
+        "scanner_version",
+        "score",
+        "score_basis",
+        "score_colour",
+        "score_display",
+        "score_explanation",
+        "score_label",
+        "score_status",
+        "scoreable_skus",
+        "scored_evidence_count",
+        "scored_skus",
+        "scoring_model",
+        "semi",
+        "semisynthetic_pct",
+        "sku_count",
+        "sku_products",
+        "source_host",
+        "source_inputs",
+        "style_count",
+        "sustainability_score",
+        "swimwear_eligible_count",
+        "swimwear_natural_fibre_pct",
+        "swimwear_score",
+        "swimwear_scoreable_count",
+        "swimwear_technical_count",
+        "swimwear_undisclosed_count",
+        "synthetic",
+        "synthetic_pct",
+        "technical_failures",
+        "throne_scan_result",
+        "throne_score",
+        "throne_score_label",
+        "throne_standard_version",
+        "total_styles",
+        "total_styles_scanned",
+        "unclear",
+        "undisclosed",
+        "undisclosed_count",
+        "undisclosed_skus",
+        "unread_count",
+        "unresolved_count",
+        "unresolved_note",
+        "why_no_score"
+      ],
+      "overwrite_policy": "Scanner results overwrite only fields listed as scanner-owned. A manual edit to these fields is not durable; source evidence and Standard version remain attached."
+    },
+    "editorial_owned": {
+      "fields": [
+        "canonical_name",
+        "website",
+        "logo",
+        "description",
+        "about",
+        "editorial_summary",
+        "images",
+        "founded_year",
+        "published_location",
+        "social_urls",
+        "sustainability_programs",
+        "repair_resale_takeback_programs",
+        "certifications_editorial",
+        "sourcing_editorial",
+        "manufacturing_editorial",
+        "country_of_origin_editorial",
+        "care_editorial"
+      ],
+      "overwrite_policy": "Never overwrite editorial-owned values automatically. Scanner enrichment may offer a sourced suggestion for review."
+    },
+    "scanner_suggested": {
+      "fields": [
+        "logo_url_candidate",
+        "about_text_candidate",
+        "location_candidate",
+        "founded_year_candidate",
+        "certification_candidate",
+        "social_url_candidate",
+        "program_candidate",
+        "product_image_candidate",
+        "country_of_origin_candidate",
+        "care_text_candidate"
+      ],
+      "overwrite_policy": "Store with source URL, evidence text, capture time, and confidence; require editorial approval before promoting to editorial-owned fields."
+    },
+    "manual_immutable": {
+      "fields": [
+        "female_owned",
+        "black_owned",
+        "lgbtq_owned",
+        "indigenous_owned",
+        "other_identity_or_ownership_claims"
+      ],
+      "overwrite_policy": "Never infer from names, photographs, or geography. Update only from explicit public evidence or verified editorial review; never overwrite automatically."
+    }
+  },
+  "report_required_fields": [
+    "brand",
+    "domain",
+    "department",
+    "category",
+    "market",
+    "locale",
+    "catalogue_total",
+    "duplicate_count",
+    "duplicate_reasons",
+    "eligible_total",
+    "coverage_count",
+    "coverage_rate",
+    "scored_evidence_count",
+    "undisclosed_count",
+    "unread_count",
+    "out_of_scope_count",
+    "disclosure_count",
+    "disclosure_rate",
+    "plant_rate_among_disclosed_products",
+    "full_catalogue_verified_plant_evidence_rate",
+    "throne_score",
+    "throne_score_label",
+    "score_basis",
+    "score_status",
+    "price_min",
+    "price_max",
+    "currency",
+    "products_on_sale_count",
+    "scanned_at",
+    "throne_standard_version",
+    "scanner_version",
+    "reader_version",
+    "qualification_note",
+    "scoring_model",
+    "composition_plant_share_pct",
+    "composition_coverage_pct",
+    "composition_assessed_count",
+    "composition_missing_count",
+    "composition_score_scope",
+    "excluded_accessory",
+    "excluded_nontextile"
+  ],
+  "public_methodology_sections": [
+    "current version",
+    "effective date",
+    "score meaning",
+    "catalogue coverage",
+    "disclosure",
+    "undisclosed products",
+    "reader failures",
+    "material classifications",
+    "evidence hierarchy",
+    "sampling fallback",
+    "category-specific rules",
+    "changelog"
+  ],
+  "changelog": [
+    {
+      "version": "1.3.2",
+      "effective_date": "2026-10-06",
+      "changes": [
+        "Classify accessories separately from eligible textile products and non-textile products using product identity evidence.",
+        "Retain accessories and non-textile products in catalogue reconciliation while excluding them from textile report rows, score denominators, missing-composition blockers, and textile price coverage.",
+        "Expose separate accessory and non-textile exclusion counts so out-of-scope products are identified without entering the textile report."
+      ]
+    },
+    {
+      "version": "1.3.1",
+      "effective_date": "2026-10-03",
+      "changes": [
+        "Removed the swimwear-specific scoring exception. Swimwear now uses the same textile composition plant-share scoring as clothing and bedding.",
+        "Legacy swimwear result fields remain compatibility-clearing fields only and no longer calculate or alter a score."
+      ]
+    },
+    {
+      "version": "1.3.0",
+      "effective_date": "2026-10-03",
+      "changes": [
+        "Separate measured composition quality from evidence coverage; missing evidence no longer receives a zero composition value.",
+        "Aggregate full declared plant percentages across assessed products, including blends.",
+        "Scope partial scores to assessed products; retain catalogue bounds and prohibit inference from non-random subsets.",
+        "Preserve raw source inputs and prefer compatible complete declarations over shortened material summaries.",
+        "Remove inferred equal component weights from numerical composition scoring."
+      ]
+    },
+    {
+      "version": "1.2.0",
+      "effective_date": "2026-09-30",
+      "changes": [
+        "Partial material evidence never earns complete pure-plant product credit. Unknown remainder stays explicit.",
+        "Impossible totals in a single composition are evidence errors and block automatic score publication. Separate complete named components are not summed as one garment; estimates remain identified.",
+        "Route every SKU independently and keep distinct department and swimwear results. Unknown departments return an unresolved result.",
+        "Automatic score publication requires trusted complete catalogue enumeration, reconciled product identities and no unresolved evidence errors.",
+        "Capture stated offers in the declared default currency, then a real USD offer; never invent a currency or exchange rate.",
+        "Beauty catalogue scores use the shared evidence-rate bands; 5/5 requires every assessed product to pass and no unresolved declarations. Score thresholds use unrounded rates."
+      ]
+    },
+    {
+      "version": "1.1.0",
+      "effective_date": "2026-09-29",
+      "changes": [
+        "Added a hard swimwear scoring exception based on quantified natural-fibre share rather than the ordinary pure-plant product pass/fail rule.",
+        "Defined 5/5 at 90-100% natural fibre, 4/5 at 70-89.99%, 3/5 at 40-69.99%, 2/5 at 10-39.99%, and 1/5 below 10%.",
+        "Required complete quantified composition for a swimwear SKU score; unknown remainders remain unscored rather than guessed.",
+        "Restricted swimwear brand scores to eligible swim garments so cover-ups, accessories and unrelated clothing cannot inflate the category result.",
+        "Kept recycled synthetics as a separately reported attribute rather than counting them as natural fibre."
+      ]
+    },
+    {
+      "version": "1.0.3",
+      "effective_date": "2026-09-27",
+      "changes": [
+        "Established one machine-readable Throne Standard and shared material taxonomy.",
+        "Defined textile score as verified plant evidence across the eligible census catalogue; undisclosed products receive no evidence credit but remain a distinct state.",
+        "Kept the 20-product lower guard only for subset-based statistical analysis and set the disclosure transparency threshold to 25%.",
+        "Defined 95% confidence, +/-5 percentage-point, p=0.5 sampling with finite population correction.",
+        "Made unquantified description materials presence-only and documented the equal-component fallback.",
+        "Defined score labels as verified-evidence descriptions rather than material-quality claims.",
+        "Allowed explicit partial and component-level compositions to score the material evidence actually stated, preserving unknown remainder and flagging totals above 100%."
+      ]
+    },
+    {
+      "version": "1.0.0",
+      "effective_date": "2026-09-27",
+      "changes": [
+        "Initial machine-readable Throne Standard release."
+      ]
+    }
+  ],
+  "sync_contract": {
+    "direction": "holdthethrone_to_idealwrld",
+    "identity_precedence": [
+      "htt_id",
+      "htt_canonical_key",
+      "htt_source_post_type+htt_source_id",
+      "exact_slug+title_one_time_fallback"
+    ],
+    "scanner_owned_fields_source": "field_ownership.scanner_owned.fields",
+    "compatibility_meta_fields": [
+      "natural_pct",
+      "coverage_method",
+      "verification_status",
+      "checked_basis",
+      "shop_platform",
+      "catalogue_open",
+      "scan_route",
+      "platform_evidence",
+      "platform_checked",
+      "scan_publication_status",
+      "scan_disclosure_rate",
+      "textile_policy_version",
+      "animal_share_nonplant",
+      "sku_scan_date"
+    ],
+    "empty_value_policy": "Blank HTT values do not erase richer IdealWrld values.",
+    "no_score_clear_fields": [
+      "sustainability_score",
+      "eco_score",
+      "score_label",
+      "score_display",
+      "score_colour",
+      "throne_score_label"
+    ],
+    "destination_owned_policy": "IdealWrld editorial_owned and manual_immutable fields are never overwritten by the Standard sync."
+  }
+}
