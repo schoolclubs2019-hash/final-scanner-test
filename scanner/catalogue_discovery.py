@@ -328,8 +328,10 @@ class ProductHTML(HTMLParser):
                         if len(headings) > 1 or len(forms) > 1 or (forms and forms[0].attrs.get('id') != 'product_form_' + str(product_id)):
                             break
                     owner = owner.parent
+            if node.tag not in {'h2', 'h3', 'h4', 'h5', 'h6', 'summary', 'button', 'dt'}:
+                continue
             label = section_label(node.text())
-            if node.tag in {'h2', 'h3', 'h4', 'h5', 'h6', 'summary', 'button', 'dt'} and label:
+            if label:
                 # Only the heading's panel/section, never the page or main element.
                 parent = node.parent
                 controlled = node.attrs.get('aria-controls')
