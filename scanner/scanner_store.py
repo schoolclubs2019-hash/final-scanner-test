@@ -84,6 +84,7 @@ class Store:
               CREATE TABLE IF NOT EXISTS pages(run_id TEXT, url TEXT, data TEXT NOT NULL, PRIMARY KEY(run_id,url));
               CREATE TABLE IF NOT EXISTS queue(brand_id TEXT PRIMARY KEY, brand TEXT NOT NULL, data TEXT NOT NULL, run_id TEXT);
               CREATE TABLE IF NOT EXISTS events(sequence INTEGER PRIMARY KEY, run_id TEXT, at TEXT, data TEXT);
+              CREATE TABLE IF NOT EXISTS rendered_recovery(run_id TEXT, url TEXT, data TEXT NOT NULL, PRIMARY KEY(run_id,url));
             '''
             self.db.execute('BEGIN IMMEDIATE')
             for statement in schema.split(';'):
