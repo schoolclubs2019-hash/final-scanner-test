@@ -134,7 +134,17 @@ def prepare_manifest(queue, state, records, workers, config, render, stop_reques
         if digest_path.exists() and digest_path.read_text().strip() != request['queue_digest']:
             raise ValueError('Durable queue digest changed')
         if not digest_path.exists() and normalize_policy(config.get('execution_policy')) is not None:
-            checkpoint_json(digest_path, request['queue_digest'])
+            temporary = digest_path.with_suffix('.tmp')
+            with temporary.open('w', encoding='utf-8') as output:
+                output.write(request['queue_digest'])
+                output.flush()
+                os.fsync(output.fileno())
+            os.replace(temporary, digest_path)
+            descriptor = os.open(str(state), os.O_RDONLY | getattr(os, 'O_DIRECTORY', 0))
+            try:
+                os.fsync(descriptor)
+            finally:
+                os.close(descriptor)
         saved = {'request': request, 'assignments': assignments}
         checkpoint_json(manifest_path, saved)
         return saved
