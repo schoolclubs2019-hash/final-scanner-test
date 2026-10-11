@@ -1,0 +1,25 @@
+name: Scanner isolated review checks
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  scanner-unit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install isolated test dependencies
+        run: python -m pip install --disable-pip-version-check beautifulsoup4 requests hypothesis pydantic openai azure-identity playwright
+      - name: Install public suffix test fixture
+        run: curl --fail --silent --show-error --location --max-time 30 https://publicsuffix.org/list/public_suffix_list.dat --output scanner/public_suffix_list.dat
+      - name: Run regression suite
+        working-directory: scanner
+        run: python -m unittest test_authority test_authority_batch test_commerce_capture test_catalogue_audit test_coderabbit_hardening -q
