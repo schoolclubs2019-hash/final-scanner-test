@@ -22,6 +22,7 @@ from scanner_store import Store, digest
 from scan_policy import PAUSE_REASONS, normalize_policy, revisit_state, with_policy
 from catalogue_audit import normalize_audit_policy
 from htt_publish import production_preflight
+from checkpoint_io import checkpoint_json
 
 
 MAX_MANIFEST_WORKERS = 16
@@ -30,18 +31,6 @@ MAX_MANIFEST_WORKERS = 16
 def validate_legacy_queue(records):
     if len(records) != 646 or any(is_kent(r) or not str(r['brand'])[0].upper() in 'ABCD' for r in records):
         raise ValueError('Production launch requires the 646 eligible non-Kent A-D records')
-
-
-def checkpoint_json(path, value):
-    """Atomically replace a small control/checkpoint file."""
-    path = Path(path)
-    temporary = path.with_name(path.name + '.tmp')
-    with temporary.open('w') as output:
-        json.dump(value, output, ensure_ascii=False, indent=2, allow_nan=False)
-        output.write('\n')
-        output.flush()
-        os.fsync(output.fileno())
-    temporary.replace(path)
 
 
 def manifest_request(records, workers, config, render):
@@ -360,9 +349,7 @@ def save_canary_result(state, run):
     result['canonical_score'] = (run.get('canonical') or {}).get('score')
     result['scanner_fingerprint'] = run.get('scanner_fingerprint')
     state = Path(state)
-    temporary = state / 'canary-result.json.tmp'
-    temporary.write_text(json.dumps(result, indent=2) + '\n')
-    temporary.replace(state / 'canary-result.json')
+    checkpoint_json(state / 'canary-result.json', result)
     return result
 
 
@@ -449,9 +436,7 @@ def run_worker(*args, stop_requested=None):
 
 
 def _save_schedule(path, value):
-    temporary = path.with_suffix('.tmp')
-    temporary.write_text(json.dumps(value, indent=2) + '\n')
-    temporary.replace(path)
+    checkpoint_json(path, value)
 
 
 def deferred_report(state, workers, now=None):
