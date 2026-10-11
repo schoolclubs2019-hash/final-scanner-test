@@ -17,7 +17,8 @@ class ManifestRecoveryTest(unittest.TestCase):
             records = [brand(1, 'First', 'https://first.example'),
                        brand(2, 'Second', 'https://second.example')]
             config = {'execution_policy': normalize_policy({
-                'workers': 1, 'first_pass_seconds': 60, 'revisit_seconds': 90})}
+                'workers': 1, 'first_pass_seconds': 60, 'revisit_seconds': 90,
+                'first_inline_wait_seconds': 10, 'revisit_inline_wait_seconds': 10})}
             def crash_before_manifest(path, value):
                 if Path(path).name == 'launch-manifest.json':
                     raise RuntimeError('simulated crash after complete shard preparation')
