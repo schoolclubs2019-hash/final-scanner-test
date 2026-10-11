@@ -500,5 +500,42 @@ class AuditTest(unittest.TestCase):
                 attest_canary(self.store, self.run_id, {'sitemap_audit_policy': policy})
 
 
+    def test_commerce_pair_exports_complete_safe_evidence(self):
+        key = 'commerce-pair:' + BASE + '/products/cotton-shirt'
+        pair = [
+            {'url': BASE + '/cart.js', 'text': '{"currency":"USD"}',
+             'headers': {'content-type': 'application/json', 'set-cookie': 'PRIVATE'}},
+            {'url': BASE + '/products/cotton-shirt.js', 'text': '{"id":123}',
+             'headers': {'content-type': 'application/json', 'authorization': 'PRIVATE'}},
+        ]
+        with self.store.db:
+            self.store.db.execute('INSERT INTO pages(run_id,url,data) VALUES(?,?,?)',
+                                  (self.run_id, key, encode({'pair': pair, 'context_id': 'anonymous',
+                                                              'checked_at': '2026-10-11T00:00:00Z'})))
+        manifest = self.export('commerce-complete')
+        documents = [d for d in manifest['documents'] if d.get('cache_key') == key]
+        self.assertEqual({d['kind'] for d in documents}, {'commerce_cart', 'commerce_product'})
+        for document in documents:
+            self.assertNotIn('set-cookie', document['headers'])
+            self.assertNotIn('authorization', document['headers'])
+            self.assertEqual(document['context_id'], 'anonymous')
+
+    def test_commerce_pair_rejects_incomplete_and_non_json(self):
+        key = 'commerce-pair:' + BASE + '/products/cotton-shirt'
+        pair = [
+            {'url': BASE + '/cart.js', 'text': '{"currency":"USD"}', 'headers': {}},
+            {'url': BASE + '/products/cotton-shirt.js', 'text': '{"id":123}', 'headers': {}},
+        ]
+        for label, captures in (('partial', pair[:1]),
+                                ('invalid-json', [pair[0], {**pair[1], 'text': 'not JSON'}])):
+            with self.subTest(label=label):
+                payload = encode({'pair': captures, 'context_id': 'anonymous',
+                                  'checked_at': '2026-10-11T00:00:00Z'})
+                with self.store.db:
+                    self.store.db.execute('INSERT OR REPLACE INTO pages(run_id,url,data) VALUES(?,?,?)',
+                                          (self.run_id, key, payload))
+                with self.assertRaises(ValueError):
+                    self.export('commerce-' + label)
+
 if __name__ == '__main__':
     unittest.main()
