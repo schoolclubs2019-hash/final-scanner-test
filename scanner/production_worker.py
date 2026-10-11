@@ -22,7 +22,7 @@ from scanner_store import Store, digest
 from scan_policy import PAUSE_REASONS, normalize_policy, revisit_state, with_policy
 from catalogue_audit import normalize_audit_policy
 from htt_publish import production_preflight
-from checkpoint_io import checkpoint_json
+from checkpoint_io import checkpoint_json, checkpoint_text
 
 
 MAX_MANIFEST_WORKERS = 16
@@ -134,17 +134,7 @@ def prepare_manifest(queue, state, records, workers, config, render, stop_reques
         if digest_path.exists() and digest_path.read_text().strip() != request['queue_digest']:
             raise ValueError('Durable queue digest changed')
         if not digest_path.exists() and normalize_policy(config.get('execution_policy')) is not None:
-            temporary = digest_path.with_suffix('.tmp')
-            with temporary.open('w', encoding='utf-8') as output:
-                output.write(request['queue_digest'])
-                output.flush()
-                os.fsync(output.fileno())
-            os.replace(temporary, digest_path)
-            descriptor = os.open(str(state), os.O_RDONLY | getattr(os, 'O_DIRECTORY', 0))
-            try:
-                os.fsync(descriptor)
-            finally:
-                os.close(descriptor)
+            checkpoint_text(digest_path, request['queue_digest'])
         saved = {'request': request, 'assignments': assignments}
         checkpoint_json(manifest_path, saved)
         return saved
@@ -163,7 +153,7 @@ def prepare_manifest(queue, state, records, workers, config, render, stop_reques
         prepare(snapshot, state, workers, resolve=policy is None, stop_requested=stop_requested,
                 execution_policy=policy, sitemap_audit_policy=audit_policy)
     if policy is not None:
-        (state / 'queue-digest').write_text(request['queue_digest'])
+        checkpoint_text(state / 'queue-digest', request['queue_digest'])
     saved = {'request': request, 'assignments': shard_manifest(
         state, workers, request['identities'], request['scanner_fingerprint'])}
     checkpoint_json(manifest_path, saved)
