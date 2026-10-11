@@ -126,10 +126,23 @@ def export_visit_audit(store, run_id, state):
                      audit_export_manifest_sha256=verified['manifest_sha256'],
                      audit_export_catalogue_status=verified['catalogue_status'],
                      audit_export_sitemap_status=verified['sitemap_status'],
-                     audit_export_event_sequence=event_seq + 1,
+                     audit_export_event_sequence=None,
                      audit_export_source_digest=source_digest,
                      audit_export_visit_number=visit.get('number'),
                      audit_export_visit_state=visit.get('state'))
+        # The events table is global to the shard; read the actual per-run sequence.
+        # Avoid store.update here, which would itself generate a new event.
+        exported_sequence = store.db.execute(
+            'SELECT COALESCE(MAX(sequence),0) FROM events WHERE run_id=?',
+            (run_id,)).fetchone()[0]
+        with store.db:
+            row = store.db.execute('SELECT data FROM runs WHERE id=?', (run_id,)).fetchone()
+            if row is None:
+                raise ValueError('Unknown scan_run_id while recording audit receipt')
+            receipt = json.loads(row[0])
+            receipt['audit_export_event_sequence'] = exported_sequence
+            store.db.execute('UPDATE runs SET data=? WHERE id=?',
+                             (json.dumps(receipt, ensure_ascii=False, allow_nan=False), run_id))
     except Exception as exc:
         # A saved export is separate from truthful catalogue/sitemap completeness.
         store.update(run_id, audit_export_status='FAIL', audit_export_error=type(exc).__name__,
